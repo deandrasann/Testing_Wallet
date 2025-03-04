@@ -21,6 +21,14 @@ public class Wallet {
         return null;
     }
 
+    public String getOwner() {
+        if (this.owner == null) {
+            return "Wallet belum dibeli.";
+        }
+        return this.owner;
+    }
+
+
     public List<String> getCards() {
         if (owner == null) {
             System.out.println("Wallet belum dibeli. Tidak dapat membuat kartu.");
@@ -42,18 +50,22 @@ public class Wallet {
         System.out.println("Kartu " + card + " berhasil ditambahkan.");
     }
 
+    public static void connectSystem(){
+        System.out.println("Connected to System");
+    }
+
+    public static void disconectSystem(){
+        System.out.println("Disconnected from System");
+    }
+
+
     public int addMoney(int amount) {
-        if (owner == null) {
-            System.out.println("Wallet belum dibeli. Tidak dapat menambahkan uang.");
-            return amount;
-        }
         if (amount <= 0) {
             System.out.println("Jumlah uang harus lebih dari 0.");
             return amount;
         }
 
         int originalAmount = amount;
-
         for (int bill : billsValues) {
             while (amount >= bill) {
                 bills.add(bill);
@@ -84,15 +96,10 @@ public class Wallet {
         }
         int totalMoney = bills.stream().mapToInt(Integer::intValue).sum()
                 + coins.stream().mapToInt(Integer::intValue).sum();
-        System.out.println("Total uang dalam wallet: " + totalMoney + " rupiah.");
         return totalMoney;
     }
 
     public void withdrawMoney(int amount) {
-        if (owner == null) {
-            System.out.println("Wallet belum dibeli. Tidak dapat melakukan penarikan uang.");
-            return;
-        }
         if (amount <= 0) {
             System.out.println("Jumlah penarikan harus lebih dari 0.");
             return;

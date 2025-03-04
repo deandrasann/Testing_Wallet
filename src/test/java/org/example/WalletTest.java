@@ -1,7 +1,6 @@
 package org.example;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.util.List;
 
@@ -10,114 +9,97 @@ import static org.junit.jupiter.api.Assertions.*;
 class WalletTest {
     private Wallet wallet;
 
+    @BeforeAll
+    public static void connectSystemTest(){
+        Wallet.connectSystem();
+    }
+
+    @AfterAll
+    public static void disconnectSystem(){
+        Wallet.disconectSystem();
+    }
+
+//    @BeforeEach
+//    public void setUpObj(){
+//
+//    }
+
     @BeforeEach
-    public void setUpObj(){
-        wallet = new Wallet();
-        wallet.purchaseWallet("Dea");
-//        wallet.addMoney(201);
+    public void cekMoneyBefore(){
+        if (wallet == null) {
+            wallet = new Wallet();
+            wallet.purchaseWallet("Dea");
+            wallet.addMoney(500000); // Menambahkan uang 500rb dan menset nama owner
+        }
+        System.out.println("Saldo sebelum transaksi: " + wallet.getTotalMoney());
+    }
+
+    @AfterEach
+    public void cekMoneyAfter(){
+        System.out.println("Saldo setelah transaksi: " + wallet.getTotalMoney());
     }
 
     @Test
     public void getCardTest(){
-        List<String> cards = wallet.getCards();
         wallet.addCard("Debit");
         wallet.addCard("Visa");
-//        assertEquals(2, cards.size()); //Berhasil
-//        assertEquals("Debit", cards.get(0)); //Berhasil
-//        assertTrue(cards.contains("Debit")); //Berhasil
-//        assertTrue(cards.contains("Credit"));
-//        assertFalse(cards.contains("Credit")); //Berhasil
-        assertFalse(cards.contains("Debit"));
-    }
 
+        List<String> cards = wallet.getCards();
+
+        assertEquals(2, cards.size());
+        assertTrue(cards.contains("Debit"));
+        assertTrue(cards.contains("Visa"));
+        assertFalse(cards.contains("Credit"));
+    }
 
     @Test
     void purchaseWalletTest() {
-//        assertEquals("Dea", wallet.purchaseWallet("Dea"),
-//                "Not the wallet owner");
-
-        assertEquals("Dea", wallet.purchaseWallet("Rio"), "Not the wallet owner");
+        assertEquals("Dea", wallet.getOwner());
     }
 
     @Test
     void addCardTest() {
-//        Wallet wallet1 = new Wallet();
-//        wallet1.addCard("KTM");
-//        assertTrue(wallet1.getCards().contains("KTM"));
-
         wallet.addCard("Debit Card");
         wallet.addCard("Credit Card");
 
-//        assertTrue(wallet.getCards().contains("Debit Card"));
+        assertTrue(wallet.getCards().contains("Debit Card"));
         assertTrue(wallet.getCards().contains("Credit Card"));
     }
 
-
     @Test
-    void addMoney() {
-//        wallet.addMoney(2499);
-//        assertEquals(2400, wallet.getTotalMoney(), "harusnya 2400");
-//        assertEquals(2499, wallet.getTotalMoney(), "harusnya 2400");
-//        assertEquals(2500, wallet.getTotalMoney(), "harusnya 2400");
-
-//        wallet.addMoney(2500);
-//        assertEquals(2400, wallet.getTotalMoney(), "harusnya 2500");
-//        assertEquals(2500, wallet.getTotalMoney(), "harusnya 2500");
+    void addMoneyTest() {
+        wallet.addMoney(200000);
+        assertEquals(700000, wallet.getTotalMoney(),
+                "Saldo harusnya 700000");
 
         wallet.addMoney(-1);
-        assertEquals(-1, wallet.getTotalMoney());
+        assertEquals(700000, wallet.getTotalMoney(),
+                "Saldo tidak boleh berubah jika input negatif");
 
-//        wallet.addMoney(2501);
-//        assertEquals(2500, wallet.getTotalMoney(), "harusnya 2500");
-//        assertEquals(2501, wallet.getTotalMoney(), "harusnya 2500");
-//        assertEquals(2600, wallet.getTotalMoney(), "harusnya 2500");
 
-        //TEST CASE COINS
-//        wallet.addMoney(99);
-//        assertEquals(0, wallet.getTotalMoney());
-//        assertEquals(99, wallet.getTotalMoney());
-//        assertEquals(100, wallet.getTotalMoney());
-//        wallet.addMoney(100);
-//        assertEquals(100, wallet.getTotalMoney());
-//        assertEquals(0, wallet.getTotalMoney());
-//        wallet.addMoney(101);
-//        assertEquals(100, wallet.getTotalMoney());
-//        assertEquals(200, wallet.getTotalMoney());
+        wallet.addMoney(199);
+        assertEquals(700100, wallet.getTotalMoney(),
+                "Saldo harusnya bertambah 100");
     }
 
     @Test
-    void getTotalMoney() {
-        wallet.addMoney(20000);
-//        assertEquals(20000, wallet.getTotalMoney());
-        wallet.addMoney(5250);
-//        assertEquals(25250, wallet.getTotalMoney()); //Error
-        assertEquals(25200, wallet.getTotalMoney());
+    public void getTotalMoneyTest() {
+        wallet.withdrawMoney(200000);
+        assertEquals(300000, wallet.getTotalMoney(), "Saldo harus tersisa 300000 setelah penarikan");
 
-//        Wallet wallet1 = new Wallet();
-//        wallet1.addMoney(200);
-//        wallet.addMoney(50000);
-//        assertEquals(70000, tm);
+        wallet.addMoney(5250);
+        assertEquals(305250, wallet.getTotalMoney(), "Saldo harus bertambah sesuai jumlah uang yang ditambahkan");
     }
 
     @Test
     void withdrawMoneyTest() {
+        wallet.withdrawMoney(200000);
+        assertEquals(300000, wallet.getTotalMoney(), "Saldo harus tersisa 300000 setelah penarikan 200000");
 
-//        wallet.addMoney(1000);
-//        wallet.withdrawMoney(-999);
-//        assertEquals(1, wallet.getTotalMoney());
+//        wallet.withdrawMoney(100000);
+//        assertEquals(200000, wallet.getTotalMoney(), "Saldo harus tersisa 200000 setelah penarikan 100000");
 //
-//        wallet.addMoney(999);
-//        wallet.withdrawMoney(1000); // Melebihi total uang dalam wallet
-//        assertEquals(1, wallet.getTotalMoney(), "Saldo Kurang");
-
-//        wallet.addMoney(1000);
-//        wallet.withdrawMoney(1000);
-//        assertEquals(0, wallet.getTotalMoney());
-
-        wallet.addMoney(1200);
-        wallet.withdrawMoney(200);
-        assertEquals(1000, wallet.getTotalMoney());
-
-
+//        wallet.withdrawMoney(300000); // Seharusnya gagal karena saldo tidak mencukupi
+//        assertEquals(200000, wallet.getTotalMoney(), "Saldo tidak boleh berubah karena uang tidak mencukupi");
     }
 }
